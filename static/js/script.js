@@ -1,7 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    let atual = "Lagoa Thermas Clube"; 
-    const container = document.getElementById("impressoras");
-    
     const totalImpressorasEl = document.getElementById("total-impressoras");
     const onlineImpressorasEl = document.getElementById("online-impressoras");
     const offlineImpressorasEl = document.getElementById("offline-impressoras");
@@ -15,26 +12,32 @@ document.addEventListener("DOMContentLoaded", () => {
         const savedTheme = localStorage.getItem('theme');
         if (savedTheme === 'dark') {
             body.classList.add('dark-mode');
-            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i> Modo Claro'; 
+            if (themeToggleBtn) {
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i> Modo Claro'; 
+            }
         } else {
             body.classList.remove('dark-mode');
-            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i> Modo Escuro'; 
+            if (themeToggleBtn) {
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i> Modo Escuro'; 
+            }
         }
     }
 
     applySavedTheme();
 
-    themeToggleBtn.addEventListener('click', () => {
-        if (body.classList.contains('dark-mode')) {
-            body.classList.remove('dark-mode');
-            localStorage.setItem('theme', 'light');
-            themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i> Modo Escuro';
-        } else {
-            body.classList.add('dark-mode');
-            localStorage.setItem('theme', 'dark');
-            themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i> Modo Claro';
-        }
-    });
+    if (themeToggleBtn) {
+        themeToggleBtn.addEventListener('click', () => {
+            if (body.classList.contains('dark-mode')) {
+                body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+                themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i> Modo Escuro';
+            } else {
+                body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i> Modo Claro';
+            }
+        });
+    }
 
     function calculateOkiTonerBar(tonerValue) {
         let ktoner = 0;
@@ -42,9 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
         let tonerFillClass = '';
 
         if (tonerValue === -1) {
-            ktoner = 0;
-            kbarsize = 1;
-            tonerFillClass = 'low';
+            ktoner = "N/A";
+            kbarsize = 0;
+            tonerFillClass = 'unknown';
         } else {
             ktoner = tonerValue;
             if (ktoner === 0) {
@@ -70,11 +73,17 @@ document.addEventListener("DOMContentLoaded", () => {
         return { displayValue: ktoner, barWidth: kbarsize, className: tonerFillClass };
     }
 
-    function carregarDados() {
-        loadingSpinner.style.display = 'block';
-        container.innerHTML = "";
+    function carregarImpressoras() {
+        $('#impressoras-lagoa-thermas').html('<p>Carregando impressoras...</p>');
+        $('#impressoras-ecotowers').html('<p>Carregando impressoras...</p>');
+        $('#impressoras-lagoa-jardins').html('<p>Carregando impressoras...</p>');
+        $('#impressoras-sala-de-vendas').html('<p>Carregando impressoras...</p>');
 
-        fetch("/api/impressoras") 
+        if (loadingSpinner) {
+            loadingSpinner.style.display = 'block';
+        }
+
+        fetch("/api/impressoras")
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -82,100 +91,165 @@ document.addEventListener("DOMContentLoaded", () => {
                 return response.json();
             })
             .then(data => {
-                loadingSpinner.style.display = 'none';
+                if (loadingSpinner) {
+                    loadingSpinner.style.display = 'none';
+                }
 
                 const total = data.length;
                 const online = data.filter(imp => imp.status === 'online').length;
                 const offline = total - online;
 
-                totalImpressorasEl.textContent = total;
-                onlineImpressorasEl.textContent = online;
-                offlineImpressorasEl.textContent = offline;
+                if (totalImpressorasEl) totalImpressorasEl.textContent = total;
+                if (onlineImpressorasEl) onlineImpressorasEl.textContent = online;
+                if (offlineImpressorasEl) offlineImpressorasEl.textContent = offline;
 
-                const impressorasFiltradas = data.filter(imp => imp.local === atual);
+                const impressorasPorLocal = {
+                    "Lagoa Thermas Clube": [],
+                    "Ecotowers": [],
+                    "Lagoa Jardins": [],
+                    "Sala de Vendas": []
+                };
 
-                if (impressorasFiltradas.length === 0) {
-                    container.innerHTML = `
-                        <div class="col-12 text-center text-white-50">
-                            <p>Nenhuma impressora encontrada para esta localização.</p>
-                        </div>
-                    `;
-                    return;
-                }
-
-                impressorasFiltradas.forEach(imp => {
-                    let tonerInfo = calculateOkiTonerBar(imp.toner);
-                    let tonerHTML = "";
-
-                    if (imp.toner === -1) {
-                        tonerHTML = '<span>Desconhecido</span>';
-                    } else {
-                        tonerHTML = `
-                        <div class="toner-container">
-                            <span>Black:</span>
-                            <div class="toner-bar">
-                                <div class="toner-fill ${tonerInfo.className}" style="width: ${tonerInfo.barWidth}%;"></div>
-                            </div>
-                            <span>${tonerInfo.displayValue}%</span>
-                        </div>`;
+                data.forEach(imp => {
+                    if (impressorasPorLocal[imp.local]) {
+                        impressorasPorLocal[imp.local].push(imp);
                     }
-
-                    const statusClass = imp.status === 'online' ? 'status-online' : 'status-offline';
-                    const statusBadgeClass = imp.status === 'online' ? 'badge-online' : 'badge-offline';
-
-                    let okiStatusBadgeClass = 'badge-error'; 
-                    if (imp.oki_status === 'Online') {
-                        okiStatusBadgeClass = 'badge-online';
-                    } else if (imp.oki_status === 'Toner Baixo' || imp.oki_status === 'Sem Papel' || imp.oki_status === 'Porta Aberta') {
-                        okiStatusBadgeClass = 'badge-toner-low'; 
-                    } else if (imp.oki_status === 'Offline' || imp.oki_status === 'Offline (Ping Falhou)' || imp.oki_status === 'Atolamento de Papel' || imp.oki_status === 'Erro Geral da Impressora') {
-                        okiStatusBadgeClass = 'badge-offline'; 
-                    }
-
-                    container.innerHTML += `
-                        <div class="col-lg-4 col-md-6 mb-4">
-                            <div class="card h-100 shadow ${statusClass}">
-                                <div class="card-header">
-                                    ${imp.nome}
-                                </div>
-                                <div class="card-body">
-                                    <p class="card-text"><strong>IP:</strong> ${imp.ip}</p>
-                                    <p class="card-text">
-                                        <strong>Status Geral:</strong> 
-                                        <span class="badge ${statusBadgeClass} badge-status">${imp.status.toUpperCase()}</span>
-                                    </p>
-                                    <p class="card-text">
-                                        <strong>Status Oki:</strong> 
-                                        <span class="badge ${okiStatusBadgeClass} badge-status">${imp.oki_status}</span>
-                                    </p>
-                                    <p class="card-text"><strong>Toner:</strong> ${tonerHTML}</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
                 });
+
+                renderizarImpressoras(impressorasPorLocal["Lagoa Thermas Clube"], 'impressoras-lagoa-thermas');
+                renderizarImpressoras(impressorasPorLocal["Ecotowers"], 'impressoras-ecotowers');
+                renderizarImpressoras(impressorasPorLocal["Lagoa Jardins"], 'impressoras-lagoa-jardins');
+                renderizarImpressoras(impressorasPorLocal["Sala de Vendas"], 'impressoras-sala-de-vendas');
             })
             .catch(error => {
-                loadingSpinner.style.display = 'none';
-                container.innerHTML = `
+                if (loadingSpinner) {
+                    loadingSpinner.style.display = 'none';
+                }
+                console.error('Erro na requisição da API:', error);
+
+                const errorMessage = `
                     <div class="col-12 text-center text-danger">
                         <p>Erro ao carregar dados das impressoras: ${error.message}</p>
                         <p>Verifique o servidor Flask e a conexão de rede.</p>
                     </div>
                 `;
-                console.error('Erro na requisição da API:', error);
+                $('#impressoras-lagoa-thermas').html(errorMessage);
+                $('#impressoras-ecotowers').html(errorMessage);
+                $('#impressoras-lagoa-jardins').html(errorMessage);
+                $('#impressoras-sala-de-vendas').html(errorMessage);
             });
     }
-    
-    carregarDados();
 
-    document.querySelectorAll(".nav-link").forEach(link => {
-        link.addEventListener("click", (e) => {
-            e.preventDefault(); 
-            document.querySelectorAll(".nav-link").forEach(l => l.classList.remove("active"));
-            link.classList.add("active");
-            atual = link.getAttribute("data-empreendimento");
-            carregarDados();
+    function renderizarImpressoras(impressorasArray, elementId) {
+        const container = document.getElementById(elementId);
+        container.innerHTML = '';
+
+        if (impressorasArray.length === 0) {
+            container.innerHTML = `
+                <div class="col-12 text-center text-secondary">
+                    <p>Nenhuma impressora encontrada para este local.</p>
+                </div>
+            `;
+            return;
+        }
+
+        impressorasArray.forEach(imp => {
+            let headerStatusClass = '';
+            let statusTextClass = '';
+            let okiStatusTextClass = 'text-muted';
+            let okiStatusBadgeClass = 'badge-secondary';
+            let cardBlinkingClass = '';
+
+            if (imp.status === 'online') {
+                statusTextClass = 'status-online';
+                headerStatusClass = 'status-online';
+                
+                if (imp.oki_status && imp.oki_status !== "Desconhecido") {
+                    if (imp.oki_status === 'Online') {
+                        okiStatusTextClass = 'status-online';
+                        okiStatusBadgeClass = 'badge-online';
+                    } else if (imp.oki_status === 'Toner Baixo' || imp.oki_status === 'Sem Papel' || imp.oki_status === 'Porta Aberta') {
+                        headerStatusClass = 'status-toner-low';
+                        okiStatusTextClass = 'status-toner-low';
+                        okiStatusBadgeClass = 'badge-toner-low';
+                    } else if (imp.oki_status === 'Offline' || imp.oki_status === 'Atolamento de Papel' || imp.oki_status === 'Erro Geral da Impressora') {
+                        headerStatusClass = 'status-offline';
+                        okiStatusTextClass = 'status-offline';
+                        okiStatusBadgeClass = 'badge-offline';
+                    } else {
+                        okiStatusTextClass = 'status-unknown';
+                        okiStatusBadgeClass = 'badge-secondary';
+                    }
+                } else {
+                     okiStatusTextClass = 'status-unknown';
+                     okiStatusBadgeClass = 'badge-secondary';
+                }
+
+                if (imp.toner !== -1 && imp.toner <= 10) {
+                    headerStatusClass = 'status-toner-low';
+                    cardBlinkingClass = 'blinking';
+                } else if (imp.toner !== -1 && imp.toner <= 20 && headerStatusClass === 'status-online') {
+                    headerStatusClass = 'status-toner-low'; 
+                }
+
+            } else {
+                statusTextClass = 'status-offline';
+                headerStatusClass = 'status-offline';
+                okiStatusTextClass = 'status-offline';
+                okiStatusBadgeClass = 'badge-offline';
+            }
+
+
+            let tonerInfo = calculateOkiTonerBar(imp.toner);
+            let tonerHTML = "";
+            let tonerBarBlinkingClass = '';
+
+            if (imp.toner !== -1 && imp.toner <= 10) {
+                tonerBarBlinkingClass = 'blinking';
+            }
+
+            if (tonerInfo.displayValue === "N/A") {
+                tonerHTML = `<span><span class="status-unknown">N/A</span></span>`;
+            } else {
+                tonerHTML = `
+                    <div class="toner-container">
+                        <span>Black:</span>
+                        <div class="toner-bar ${tonerBarBlinkingClass}">
+                            <div class="toner-fill ${tonerInfo.className}" style="width: ${tonerInfo.barWidth}%;"></div>
+                        </div>
+                        <span>${tonerInfo.displayValue}%</span>
+                    </div>`;
+            }
+            
+            const cardHtml = `
+                <div class="col-12 col-sm-6 col-md-3 mb-4">
+                    <div class="card h-100 shadow ${headerStatusClass} ${cardBlinkingClass}">
+                        <div class="card-header">
+                            ${imp.nome}
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text"><strong>IP:</strong> ${imp.ip}</p>
+                            <p class="card-text">
+                                <strong>Status Geral:</strong> 
+                                <span class="${statusTextClass}">${imp.status.toUpperCase()}</span>
+                            </p>
+                            <p class="card-text">
+                                <strong>Status Oki:</strong> 
+                                <span class="${okiStatusTextClass}">${imp.oki_status}</span>
+                            </p>
+                            <p class="card-text"><strong>Toner:</strong> ${tonerHTML}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += cardHtml;
         });
+    }
+
+    carregarImpressoras();
+    setInterval(carregarImpressoras, 30000);
+
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        carregarImpressoras();
     });
 });

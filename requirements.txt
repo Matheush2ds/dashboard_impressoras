@@ -1,0 +1,6 @@
+Flask==2.3.2
+ping3==4.0.4
+pysnmp==4.4.12
+gunicorn==20.1.0
+pyasn1==0.5.1
+pysnmp-mibs==0.1.6
