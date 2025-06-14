@@ -46,7 +46,6 @@ body {
     border-color: #545b62;
 }
 
-/* Centralizar o menu de abas */
 .dashboard-tabs {
     display: flex;
     justify-content: center;
@@ -81,7 +80,6 @@ body {
     background-color: #f2f2f2;
     color: #212529;
 }
-
 
 .card {
     border-radius: 10px;
@@ -126,11 +124,10 @@ body {
     font-weight: 600;
 }
 
-.badge-online { background-color: #28a745; color: #fff; }
+.badge-online { background-color: #00ff3c; color: #fff; }
 .badge-offline { background-color: #dc3545; color: #fff; }
 .badge-toner-low { background-color: #ffc107; color: #333; }
 .badge-error { background-color: #6c757d; color: #fff; }
-
 
 .toner-container {
     display: flex;
@@ -156,16 +153,14 @@ body {
     border-radius: 4px;
 }
 
-.toner-fill.high { border-right: 3px solid #28a745; } 
+.toner-fill.high { border-right: 3px solid #04ff3e; } 
 .toner-fill.medium { border-right: 3px solid #ffc107; } 
 .toner-fill.low { border-right: 3px solid #dc3545; } 
 
-
-/* Estilos para o status de cor do card-header */
 .card-header.status-online {
     background-color: #d4edda;
     color: #155724;
-    border-color: #28a745 !important;
+    border-color: #00ff3c !important;
 }
 
 .card-header.status-offline {
@@ -187,19 +182,15 @@ body {
     100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
 }
 
-
-/* Animação para a barra de toner piscando */
 @keyframes blink-toner {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.2; }
 }
 
-/* Classe para aplicar a animação quando o toner estiver baixo */
 .toner-bar.blinking .toner-fill {
     animation: blink-toner 1s infinite alternate;
 }
 
-/* Opcional: Se quiser que o card inteiro pisque também, ou só a borda do header, adicione isso */
 .card-header.status-toner-low.blinking {
     animation: pulse-low-toner 1s infinite alternate;
 }
@@ -210,7 +201,6 @@ body {
 }
 
 
-/* --- Estilos para o Modo Escuro --- */
 body.dark-mode {
     background-color: #121212;
     color: #e0e0e0;
@@ -290,7 +280,6 @@ body.dark-mode .card-header.status-toner-low {
     border-color: #ffc107 !important;
 }
 
-/* Modo Escuro - ajuste para o pulso do header */
 body.dark-mode .card-header.status-toner-low.blinking {
     animation: pulse-low-toner-dark 1s infinite alternate;
 }
@@ -299,7 +288,6 @@ body.dark-mode .card-header.status-toner-low.blinking {
     0%, 100% { box-shadow: 0 0 0 0 rgba(255, 224, 140, 0.7); }
     50% { box-shadow: 0 0 0 5px rgba(255, 224, 140, 0.3); }
 }
-
 
 body.dark-mode .card-text {
     color: #c0c0c0;
@@ -336,7 +324,6 @@ body.dark-mode #loading-spinner p {
     color: #007bff;
 }
 
-/* Ajustes para a cor do status Geral (texto) no card-body */
 .card-body .status-online {
     color: #28a745;
     font-weight: bold;
@@ -354,7 +341,6 @@ body.dark-mode #loading-spinner p {
     font-weight: normal;
 }
 
-/* Modo escuro para o texto de status dentro do card-body */
 body.dark-mode .card-body .status-online {
     color: #a7f2a7;
 }

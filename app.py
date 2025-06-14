@@ -24,10 +24,6 @@ impressoras = [
     {"nome": "Contabilidade", "ip": "172.24.0.10", "local": "Lagoa Thermas Clube"},
     {"nome": "Central de Títulos", "ip": "172.24.0.19", "local": "Lagoa Thermas Clube"},
     {"nome": "Almoxarifado Hotel", "ip": "172.50.0.31", "local": "Lagoa Thermas Clube"},
-    
-    {"nome": "Impressora Adm Principal", "ip": "172.30.0.201", "local": "Lagoa Thermas Clube"},
-    {"nome": "Impressora Contabilidade", "ip": "172.30.0.202", "local": "Lagoa Thermas Clube"},
-    {"nome": "Impressora Financeiro", "ip": "172.30.0.203", "local": "Lagoa Thermas Clube"},
 
     {"nome": "Impressora Compras", "ip": "192.168.200.89", "local": "Ecotowers"},
     {"nome": "Impressora Almoxarifado Principal", "ip": "192.168.200.87", "local": "Ecotowers"},
