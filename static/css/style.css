@@ -291,6 +291,8 @@ body {
     animation: blink-toner 1s infinite alternate;
 }
 
+/* Dark Mode */
+
 body.dark-mode {
     background-color: #1a202c;
     color: #e2e8f0;
