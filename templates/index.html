@@ -2,99 +2,105 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dashboard de Impressoras</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard de Impressoras - Monitoramento Geral</title>
+    <link rel="icon" href="{{ url_for('static', filename='images/favicon.ico') }}" type="image/x-icon">
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@300;400;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
 </head>
 <body>
-    <div class="container-fluid dashboard-bg">
-        <header class="d-flex justify-content-between align-items-center py-4 px-3 mb-4">
-            <button id="theme-toggle" class="btn btn-secondary">
-                <i class="fas fa-moon"></i> Modo Escuro
+    <div class="container-fluid dashboard-bg min-vh-100 d-flex flex-column">
+        <header class="d-flex justify-content-between align-items-center py-4 px-3 mb-4 border-bottom">
+            <h1 class="h3 mb-0 text-light">Monitoramento de Impressoras</h1>
+            <button id="theme-toggle" class="btn btn-outline-light rounded-pill" aria-label="Alternar tema">
+                <i class="fas fa-moon mr-2"></i><span>Modo Escuro</span>
             </button>
         </header>
 
-        <div class="row text-center mb-4 px-3">
-            <div class="col-md-2 mb-3">
-                <div class="card summary-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Total de Impressoras</h5>
-                        <h3 class="text-primary" id="total-impressoras">0</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2 mb-3">
-                <div class="card summary-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Online</h5>
-                        <h3 class="text-success" id="online-impressoras">0</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2 mb-3">
-                <div class="card summary-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Offline</h5>
-                        <h3 class="text-danger" id="offline-impressoras">0</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2 mb-3">
-                <div class="card summary-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Toner Baixo</h5>
-                        <h3 class="text-warning" id="low-toner-impressoras">0</h3>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-2 mb-3">
-                <div class="card summary-card">
-                    <div class="card-body">
-                        <h5 class="card-title">Com Erro</h5>
-                        <h3 class="text-info" id="error-impressoras">0</h3>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <main class="flex-fill">
+            <section class="row text-center mb-4 px-3" aria-labelledby="summary-heading">
+                <h2 id="summary-heading" class="sr-only">Resumo do Status das Impressoras</h2>
 
-        <ul class="nav nav-tabs dashboard-tabs justify-content-center" id="empreendimentoTabs" role="tablist">
-            <li class="nav-item">
-                <a class="nav-link active" id="lagoa-thermas-tab" data-toggle="tab" href="#lagoa-thermas" role="tab" aria-controls="lagoa-thermas" aria-selected="true" data-empreendimento="Lagoa Thermas Clube">Lagoa Thermas Clube</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="ecotowers-tab" data-toggle="tab" href="#ecotowers" role="tab" aria-controls="ecotowers" aria-selected="false" data-empreendimento="Ecotowers">Ecotowers</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="lagoa-jardins-tab" data-toggle="tab" href="#lagoa-jardins" role="tab" aria-controls="lagoa-jardins" aria-selected="false" data-empreendimento="Lagoa Jardins">Lagoa Jardins</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" id="sala-de-vendas-tab" data-toggle="tab" href="#sala-de-vendas" role="tab" aria-controls="sala-de-vendas" aria-selected="false" data-empreendimento="Sala de Vendas">Sala de Vendas</a>
-            </li>
-        </ul>
+                <div class="col-md-2 col-sm-6 mb-3">
+                    <div class="card summary-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Total de Impressoras</h5>
+                            <p class="h3 text-primary" id="total-impressoras" role="status" aria-live="polite">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-6 mb-3">
+                    <div class="card summary-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Online</h5>
+                            <p class="h3 text-success" id="online-impressoras" role="status" aria-live="polite">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-6 mb-3">
+                    <div class="card summary-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Offline</h5>
+                            <p class="h3 text-danger" id="offline-impressoras" role="status" aria-live="polite">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-6 mb-3">
+                    <div class="card summary-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Toner Baixo</h5>
+                            <p class="h3 text-warning" id="low-toner-impressoras" role="status" aria-live="polite">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-2 col-sm-6 mb-3">
+                    <div class="card summary-card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">Com Erro</h5>
+                            <p class="h3 text-info" id="error-impressoras" role="status" aria-live="polite">0</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
 
-        <div class="tab-content mt-4 px-3" id="empreendimentoTabContent">
-            <div class="tab-pane fade show active" id="lagoa-thermas" role="tabpanel" aria-labelledby="lagoa-thermas-tab">
-                <div class="row"></div>
+            <nav aria-label="Navegação por Empreendimento">
+                <ul class="nav nav-tabs dashboard-tabs justify-content-center" id="empreendimentoTabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="lagoa-thermas-tab" data-toggle="tab" href="#lagoa-thermas" role="tab" aria-controls="lagoa-thermas" aria-selected="true" data-empreendimento="Lagoa Thermas Clube">Lagoa Thermas Clube</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="ecotowers-tab" data-toggle="tab" href="#ecotowers" role="tab" aria-controls="ecotowers" aria-selected="false" data-empreendimento="Ecotowers">Ecotowers</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="sala-de-vendas-tab" data-toggle="tab" href="#sala-de-vendas" role="tab" aria-controls="sala-de-vendas" aria-selected="false" data-empreendimento="Sala de Vendas">Sala de Vendas</a>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="tab-content mt-4 px-3" id="empreendimentoTabContent">
+                <div class="tab-pane fade show active" id="lagoa-thermas" role="tabpanel" aria-labelledby="lagoa-thermas-tab">
+                    <div class="row">
+                        <p class="col-12 text-muted text-center py-5">Nenhuma impressora encontrada para Lagoa Thermas Clube.</p>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="ecotowers" role="tabpanel" aria-labelledby="ecotowers-tab">
+                    <div class="row">
+                        <p class="col-12 text-muted text-center py-5">Nenhuma impressora encontrada para Ecotowers.</p>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="sala-de-vendas" role="tabpanel" aria-labelledby="sala-de-vendas-tab">
+                    <div class="row">
+                        <p class="col-12 text-muted text-center py-5">Nenhuma impressora encontrada para Sala de Vendas.</p>
+                    </div>
+                </div>
             </div>
-            <div class="tab-pane fade" id="ecotowers" role="tabpanel" aria-labelledby="ecotowers-tab">
-                <div class="row"></div>
-            </div>
-            <div class="tab-pane fade" id="lagoa-jardins" role="tabpanel" aria-labelledby="lagoa-jardins-tab">
-                <div class="row"></div>
-            </div>
-            <div class="tab-pane fade" id="sala-de-vendas" role="tabpanel" aria-labelledby="sala-de-vendas-tab">
-                <div class="row"></div>
-            </div>
-        </div>
+        </main>
     </div>
 
-    <div id="loading-spinner" class="text-center mt-5" style="display: none;">
-        <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">Carregando...</span>
-        </div>
+    <div id="loading-spinner" class="text-center mt-5" style="display: none;" aria-live="assertive" aria-atomic="true">
+        <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
         <p class="mt-2">Carregando dados das impressoras...</p>
     </div>
 
