@@ -87,7 +87,8 @@ $(document).ready(function () {
                     online++;
                     cardHeaderClass = 'status-online';
                     statusBadge = 'badge-online';
-                    if (detail.includes('Toner Baixo')) {
+
+                    if (toner >= 0 && toner <= 15) {
                         lowToner++;
                         blink = 'blinking';
                         cardHeaderClass = 'status-toner-low';
