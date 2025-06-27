@@ -438,6 +438,6 @@ body.dark-mode .toner-container span {
 
 body.dark-mode .card-body .status-online { color: #9ae6b4; }
 body.dark-mode .card-body .status-offline { color: #feb2b2; }
-body.dark-mode .card-body .status-toner-low { color: #f6ad55; }
+body.dark-mode .card-body .status-toner-low { color: #ff8c00; }
 body.dark-mode .card-body .status-error { color: #90cdf4; }
 body.dark-mode .card-body .status-unknown { color: #a0aec0; }
