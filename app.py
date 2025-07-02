@@ -22,6 +22,7 @@ OKI_STATUS_MAP = {
 }
 
 impressoras = [
+    # Lagoa Thermas Clube
     {"nome": "Impressora TI Parque", "ip": "172.30.0.224", "local": "Lagoa Thermas Clube", "community_string": "public"},
     {"nome": "Impressora Bilheteria", "ip": "172.30.0.223", "local": "Lagoa Thermas Clube", "community_string": "public"},
     {"nome": "Impressora RH", "ip": "172.24.0.61", "local": "Lagoa Thermas Clube", "community_string": "public"},
@@ -37,13 +38,27 @@ impressoras = [
     {"nome": "Contabilidade", "ip": "172.24.0.10", "local": "Lagoa Thermas Clube", "community_string": "public"},
     {"nome": "Central de Títulos", "ip": "172.24.0.19", "local": "Lagoa Thermas Clube", "community_string": "public"},
     {"nome": "Almoxarifado Hotel", "ip": "172.50.0.31", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Impressora Contabilidade", "ip": "172.30.0.202", "local": "Lagoa Thermas Clube", "community_string": "public"},
+    {"nome": "IMP Governança LQH", "ip": "172.50.0.10", "local": "Lagoa Thermas Clube", "community_string": "public"},
+    {"nome": "Imp Sr Ari", "ip": "172.24.0.14", "local": "Lagoa Thermas Clube", "community_string": "public"},
+    {"nome": "Recepção Hotel Vermelho", "ip": "192.168.5.39", "local": "Lagoa Thermas Clube", "community_string": "public"},
+
+    # Ecotowers
     {"nome": "Impressora Compras", "ip": "192.168.200.89", "local": "Ecotowers", "community_string": "public"},
     {"nome": "Impressora Almoxarifado Principal", "ip": "192.168.200.87", "local": "Ecotowers", "community_string": "public"},
+    {"nome": "AEB Ecotowers", "ip": "192.168.200.92", "local": "Ecotowers", "community_string": "public"},
+
+    # Sala de Vendas
     {"nome": "Sala de vendas Eco", "ip": "192.168.200.91", "local": "Sala de Vendas", "community_string": "public"},
     {"nome": "Sala de vendas Lagoa Quente", "ip": "172.30.0.228", "local": "Sala de Vendas", "community_string": "public"},
     {"nome": "Imp Vendas Jardins", "ip": "192.168.3.231", "local": "Sala de Vendas", "community_string": "public"},
     {"nome": "Sala de venda parque", "ip": "172.30.0.225", "local": "Sala de Vendas", "community_string": "public"},
+
+    # CN
+    {"nome": "IMP-BACK-OFFICE", "ip": "192.168.10.29", "local": "CN", "community_string": "public"},
+    {"nome": "LOJA CENTRO", "ip": "192.168.20.231", "local": "CN", "community_string": "public"},
+    {"nome": "Financeiro CN", "ip": "192.168.10.26", "local": "CN", "community_string": "public"},
+    {"nome": "IMP-SERRA-VERDE", "ip": "192.168.10.27", "local": "CN", "community_string": "public"},
+    {"nome": "Pos Venda IMP-POS-Vendas", "ip": "192.168.10.27", "local": "CN", "community_string": "public"},
 ]
 
 executor = ThreadPoolExecutor(max_workers=20)
