@@ -44,7 +44,13 @@ impressoras = [
     {"nome": "Sala de vendas Lagoa Quente", "ip": "172.30.0.228", "local": "Sala de Vendas", "community_string": "public"},
     {"nome": "Imp Vendas Jardins", "ip": "192.168.3.231", "local": "Sala de Vendas", "community_string": "public"},
     {"nome": "Sala de venda parque", "ip": "172.30.0.225", "local": "Sala de Vendas", "community_string": "public"},
+    {"nome": "IMP-PARQUE-CN", "ip": "192.168.10.26", "local": "Centro", "community_string": "public"},
+    {"nome": "IMP-RESERVAS-CN", "ip": "192.168.10.28", "local": "Centro", "community_string": "public"},
+    {"nome": "IMP-RECEP-PARQUE", "ip": "192.168.10.26", "local": "Centro", "community_string": "public"},
+    {"nome": "IMP-ADM-CENTRO", "ip": "192.168.10.17", "local": "Centro", "community_string": "public"},
+    {"nome": "IMP-BACK-OFFICE", "ip": "192.168.10.83", "local": "Centro", "community_string": "public"},
 ]
+
 
 executor = ThreadPoolExecutor(max_workers=20)
 
