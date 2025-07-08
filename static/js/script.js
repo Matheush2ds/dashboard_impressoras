@@ -184,5 +184,5 @@ $(document).ready(function () {
 
     fetchPrinterData();
     $('.refresh-icon').on('click', fetchPrinterData);
-    setInterval(fetchPrinterData, 60000);
+    setInterval(fetchPrinterData, 30000);
 });

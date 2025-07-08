@@ -120,12 +120,12 @@ def check_printer_status(imp):
                 detalhado = consulta_oki_status(ip, community)
                 toner = consulta_toner(ip, oid_toner, community)
                 if toner == -1:
-                    detalhado += " (Toner OID Não Encontrado)"
+                    detalhado += " (OID não Encontrado)"
             else:
                 detalhado = "Online (SNMP OK)"
                 toner = consulta_toner(ip, oid_toner, community)
                 if toner == -1:
-                    detalhado += " (Toner OID Não Encontrado)"
+                    detalhado += " (OID não Encontrado)"
 
     return {
         "nome": nome,
