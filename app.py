@@ -1,3 +1,5 @@
+# app.py
+
 import logging
 from flask import Flask, jsonify, render_template
 from ping3 import ping
@@ -6,135 +8,93 @@ from pysnmp.hlapi import (
     SnmpEngine, CommunityData, UdpTransportTarget, ContextData,
     ObjectType, ObjectIdentity, getCmd
 )
+# Importa a configuração do arquivo separado
+from config import IMPRESSORAS, COMMUNITY_STRING_DEFAULT, DEFAULT_OID_TONER, OKI_STATUS_MAP, OID_OKI_PRINTER_STATUS, OID_SYS_DESCR
 
 app = Flask(__name__)
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-OID_SYS_DESCR = '1.3.6.1.2.1.1.1.0'
-DEFAULT_OID_TONER = '1.3.6.1.2.1.43.11.1.1.9.1.1'
-OID_OKI_PRINTER_STATUS = '1.3.6.1.4.1.258.1.1.1.1.1.2'
-OKI_SPECIFIC_TONER_OID = '1.3.6.1.4.1.258.1.1.1.1.1.18'
+executor = ThreadPoolExecutor(max_workers=len(IMPRESSORAS) or 20)
+snmp_engine = SnmpEngine()
 
-OKI_STATUS_MAP = {
-    1: "Online", 2: "Offline", 3: "Nenhuma Impressora Conectada",
-    4: "Toner Baixo", 5: "Sem Papel", 6: "Atolamento de Papel",
-    7: "Porta Aberta", 16: "Erro Geral da Impressora"
-}
-
-impressoras = [
-    # Lagoa Thermas Clube
-    {"nome": "Impressora TI Parque", "ip": "172.30.0.224", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Impressora Bilheteria", "ip": "172.30.0.223", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Impressora RH", "ip": "172.24.0.61", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Impressora AeB", "ip": "172.30.0.227", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Almoxarifado Parque", "ip": "172.30.0.221", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Ambulatório Parque", "ip": "172.30.0.222", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Impressora Diretoria", "ip": "172.24.0.15", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "AeB Hotel Vermelho", "ip": "172.50.0.30", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Impressora Financeiro 1", "ip": "172.24.0.11", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Impressora Financeiro 2", "ip": "172.24.0.12", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Impressora AeB Vermelho", "ip": "172.50.0.10", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "IMP Marketing", "ip": "172.24.0.17", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Contabilidade", "ip": "172.24.0.10", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Central de Títulos", "ip": "172.24.0.19", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Almoxarifado Hotel", "ip": "172.50.0.31", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "IMP Governança LQH", "ip": "172.50.0.10", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Imp Sr Ari", "ip": "172.24.0.14", "local": "Lagoa Thermas Clube", "community_string": "public"},
-    {"nome": "Recepção Hotel Vermelho", "ip": "192.168.5.39", "local": "Lagoa Thermas Clube", "community_string": "public"},
-
-    # Ecotowers
-    {"nome": "Impressora Compras", "ip": "192.168.200.89", "local": "Ecotowers", "community_string": "public"},
-    {"nome": "Impressora Almoxarifado Principal", "ip": "192.168.200.87", "local": "Ecotowers", "community_string": "public"},
-    {"nome": "AEB Ecotowers", "ip": "192.168.200.92", "local": "Ecotowers", "community_string": "public"},
-
-    # Sala de Vendas
-    {"nome": "Sala de vendas Eco", "ip": "192.168.200.91", "local": "Sala de Vendas", "community_string": "public"},
-    {"nome": "Sala de vendas Lagoa Quente", "ip": "172.30.0.228", "local": "Sala de Vendas", "community_string": "public"},
-    {"nome": "Imp Vendas Jardins", "ip": "192.168.3.231", "local": "Sala de Vendas", "community_string": "public"},
-    {"nome": "Sala de venda parque", "ip": "172.30.0.225", "local": "Sala de Vendas", "community_string": "public"},
-
-    # CN
-    {"nome": "IMP-BACK-OFFICE", "ip": "192.168.10.29", "local": "CN", "community_string": "public"},
-    {"nome": "LOJA CENTRO", "ip": "192.168.20.231", "local": "CN", "community_string": "public"},
-    {"nome": "Financeiro CN", "ip": "192.168.10.26", "local": "CN", "community_string": "public"},
-    {"nome": "IMP-SERRA-VERDE", "ip": "192.168.10.27", "local": "CN", "community_string": "public"},
-    {"nome": "Pos Venda IMP-POS-Vendas", "ip": "192.168.10.27", "local": "CN", "community_string": "public"},
-]
-
-executor = ThreadPoolExecutor(max_workers=20)
-
-def consulta_snmp_oid(ip, oid, community_string='public', timeout=1, retries=0):
+def query_snmp(ip, oid, community, timeout=1, retries=0):
+    """Função genérica e otimizada para consultas SNMP."""
     try:
-        errorIndication, errorStatus, _, varBinds = next(
-            getCmd(
-                SnmpEngine(),
-                CommunityData(community_string, mpModel=0),
-                UdpTransportTarget((ip, 161), timeout=timeout, retries=retries),
-                ContextData(),
-                ObjectType(ObjectIdentity(oid))
-            )
+        iterator = getCmd(
+            snmp_engine,
+            CommunityData(community, mpModel=0),
+            UdpTransportTarget((ip, 161), timeout=timeout, retries=retries),
+            ContextData(),
+            ObjectType(ObjectIdentity(oid))
         )
-        if errorIndication or errorStatus:
+        error_indication, error_status, _, var_binds = next(iterator)
+
+        if error_indication or error_status:
+            logging.warning(f"SNMP Error for {ip} with OID {oid}: {error_indication or error_status.prettyPrint()}")
             return None
-        return varBinds[0][1]
-    except:
+        return var_binds[0][1]
+    except Exception as e:
+        logging.error(f"Exception querying SNMP for {ip} with OID {oid}: {e}")
         return None
 
-def consulta_toner(ip, oid_toner, community_string='public'):
-    valor = consulta_snmp_oid(ip, oid_toner, community_string)
-    if valor is None:
+def get_toner_level(ip, oid, community):
+    """Obtém o nível de toner e o normaliza para um valor entre 0-100 ou -1 (erro)."""
+    value = query_snmp(ip, oid, community)
+    if value is None:
         return -1
     try:
-        val = int(valor)
-        return val if 0 <= val <= 100 else -1
-    except:
+        level = int(value)
+        return level if 0 <= level <= 100 else -1
+    except (ValueError, TypeError):
         return -1
 
-def consulta_oki_status(ip, community_string='public'):
-    valor = consulta_snmp_oid(ip, OID_OKI_PRINTER_STATUS, community_string)
-    if valor is None:
-        return "N/A"
-    try:
-        return OKI_STATUS_MAP.get(int(valor), f"Status Não Mapeado ({valor})")
-    except:
+def get_oki_status_detail(ip, community):
+    """Obtém o status detalhado de uma impressora OKI."""
+    status_code = query_snmp(ip, OID_OKI_PRINTER_STATUS, community)
+    if status_code is None:
         return "Desconhecido"
+    try:
+        return OKI_STATUS_MAP.get(int(status_code), f"Status Não Mapeado ({status_code})")
+    except (ValueError, TypeError):
+        return "Formato de Status Inválido"
 
-def check_printer_status(imp):
-    ip = imp["ip"]
-    nome = imp["nome"]
-    local = imp["local"]
-    community = imp.get("community_string", "public")
-    oid_toner = imp.get("oid_toner", DEFAULT_OID_TONER)
-    is_oki = (oid_toner == OKI_SPECIFIC_TONER_OID)
-    status_ping = ping(ip, timeout=0.5)
-    status = "online" if status_ping else "offline"
-    descr = consulta_snmp_oid(ip, OID_SYS_DESCR, community) if status == "online" else None
-    toner = -1
-    detalhado = "Offline (Ping Falhou)"
-
-    if status == "online":
-        if descr is None:
-            detalhado = "Online (SNMP Inacessível)"
-        else:
-            if is_oki:
-                detalhado = consulta_oki_status(ip, community)
-                toner = consulta_toner(ip, oid_toner, community)
-                if toner == -1:
-                    detalhado += " (OID não Encontrado)"
-            else:
-                detalhado = "Online (SNMP OK)"
-                toner = consulta_toner(ip, oid_toner, community)
-                if toner == -1:
-                    detalhado += " (OID não Encontrado)"
-
-    return {
-        "nome": nome,
-        "ip": ip,
-        "status": status,
-        "printer_detailed_status": detalhado,
-        "toner": toner,
-        "local": local
+def check_printer(printer_config):
+    """Verifica o status completo de uma única impressora."""
+    ip = printer_config["ip"]
+    community = printer_config.get("community_string", COMMUNITY_STRING_DEFAULT)
+    
+    response = {
+        "nome": printer_config["nome"], "ip": ip, "local": printer_config.get("local", "Outros"),
+        "status": "offline", "printer_detailed_status": "Offline (Ping Falhou)", "toner": -1
     }
+
+    try:
+        if ping(ip, timeout=0.5) is None:
+            logging.info(f"{response['nome']} is offline.")
+            return response
+    except Exception as e:
+        logging.warning(f"Ping failed for {ip}: {e}")
+        return response
+    
+    # Se chegou aqui, a impressora está online. A lógica agora é simples e direta.
+    response["status"] = "online"
+    
+    # 1. SEMPRE tenta buscar o toner se a impressora estiver online.
+    oid_toner = printer_config.get("oid_toner", DEFAULT_OID_TONER)
+    response["toner"] = get_toner_level(ip, oid_toner, community)
+
+    # 2. Busca o status detalhado.
+    if printer_config.get("is_oki", False):
+        response["printer_detailed_status"] = get_oki_status_detail(ip, community)
+    else:
+        snmp_descr = query_snmp(ip, OID_SYS_DESCR, community)
+        if snmp_descr is None:
+            response["printer_detailed_status"] = "SNMP Inacessível"
+        else:
+            response["printer_detailed_status"] = "Pronta"
+    
+    logging.info(f"{response['nome']} - {response['printer_detailed_status']} - Toner: {response['toner'] if response['toner'] >= 0 else 'N/A'}")
+    return response
 
 @app.route('/')
 def index():
@@ -142,8 +102,9 @@ def index():
 
 @app.route('/api/impressoras')
 def api_impressoras():
-    resultado = list(executor.map(check_printer_status, impressoras))
-    return jsonify(resultado)
+    futures = [executor.submit(check_printer, imp) for imp in IMPRESSORAS]
+    results = [f.result() for f in futures]
+    return jsonify(results)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=False, host='0.0.0.0', port=5000)
