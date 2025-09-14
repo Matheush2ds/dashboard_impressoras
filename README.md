@@ -1,4 +1,4 @@
-# ?? Dashboard de Monitoramento de Impressoras v2.0
+# Dashboard de Monitoramento de Impressoras v2.0
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue?style=for-the-badge&logo=python)
 ![Flask](https://img.shields.io/badge/Flask-2.2-black?style=for-the-badge&logo=flask)
@@ -8,7 +8,7 @@
 
 Este projeto foi desenvolvido com o objetivo de **monitorar em tempo real o status das impressoras** e **acompanhar o nível de toner**, permitindo a troca preventiva de suprimentos. O sistema garante que **nenhum setor tenha suas operações interrompidas** por falta de impressão, otimizando o fluxo de trabalho e a gestão de recursos.
 
-## ? Funcionalidades Principais
+## Funcionalidades Principais
 
 -   **??? Monitoramento Real-Time:** Visualização clara do status `Online`, `Offline`, `Com Erro` ou `Toner Baixo`.
 -   **?? Nível de Toner:** Barras de progresso visuais indicam o nível de suprimento de cada impressora.
@@ -17,7 +17,7 @@ Este projeto foi desenvolvido com o objetivo de **monitorar em tempo real o stat
 -   **?? Atualização Automática:** Os dados são atualizados periodicamente sem a necessidade de recarregar a página.
 -   **?? Suporte a Docker:** A aplicação pode ser facilmente executada em um container isolado.
 
-## ??? Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 | Backend          | Frontend             | Comunicação de Rede   |
 | ---------------- | -------------------- | --------------------- |
@@ -35,7 +35,7 @@ Este projeto foi desenvolvido com o objetivo de **monitorar em tempo real o stat
 [jQuery]: https://img.shields.io/badge/-jQuery-0769AD?style=flat&logo=jquery&logoColor=white
 [BS]: https://img.shields.io/badge/-Bootstrap-7952B3?style=flat&logo=bootstrap&logoColor=white
 
-## ?? Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 /projeto_monitoramento
@@ -52,7 +52,7 @@ Este projeto foi desenvolvido com o objetivo de **monitorar em tempo real o stat
     +-- index.html
 ```
 
-## ?? Como Executar
+## Como Executar
 
 Siga os passos abaixo para configurar e rodar o projeto em sua máquina local.
 
@@ -98,7 +98,7 @@ Siga os passos abaixo para configurar e rodar o projeto em sua máquina local.
     ```
 2.  **Acesse o dashboard** no seu navegador em `http://127.0.0.1:5000`.
 
-## ?? Executando com Docker
+## Executando com Docker
 
 Como alternativa, você pode rodar a aplicação em um container Docker, garantindo um ambiente isolado e de fácil deploy.
 
