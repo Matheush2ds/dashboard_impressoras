@@ -113,6 +113,6 @@ Como alternativa, você pode rodar a aplicação em um container Docker, garanti
     ```
 3.  **Acesse o dashboard** no seu navegador em `http://localhost:5000`.
 
-## ?? Objetivo do Projeto
+## Objetivo do Projeto
 
 Evitar a paralisação das atividades de setores dependentes de impressão, garantindo visibilidade em tempo real do estado da infraestrutura e permitindo a antecipação na reposição de suprimentos. Ideal para ambientes corporativos que precisam maximizar a eficiência e o controle de seus ativos de impressão.
